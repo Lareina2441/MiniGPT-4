@@ -1,4 +1,43 @@
-# MiniGPT-V
+# 部署 MiniGPT-V
+
+报错1
+
+name ‘cuda_setup’ is not defined
+
+解决方法
+
+```bash
+pip install -U bitsandbytes
+```
+
+参考：https://blog.csdn.net/dzysunshine/article/details/130491896 an   https://github.com/Vision-CAIR/MiniGPT-4/issues/117
+
+报错2
+
+torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 136.00 MiB (GPU 0; 23.68 GiB total capacity; 2.49 GiB already allocated; 63.75 MiB free; 2.67 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+
+尝试1
+
+```bash
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python demo.py --cfg-path eval_configs/minigpt4_eval.yaml  --gpu-id 0
+```
+
+失败：torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 136.00 MiB (GPU 0; 23.68 GiB total capacity; 2.49 GiB already allocated; 63.75 MiB free; 2.67 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <font size='5'>**MiniGPT-v2: Large Language Model as a Unified Interface for Vision-Language Multi-task Learning**</font>
 
