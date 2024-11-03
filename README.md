@@ -1,6 +1,6 @@
 # 部署 MiniGPT-V
 
-报错1
+## 报错1
 
 name ‘cuda_setup’ is not defined
 
@@ -12,7 +12,7 @@ pip install -U bitsandbytes
 
 参考：https://blog.csdn.net/dzysunshine/article/details/130491896 an   https://github.com/Vision-CAIR/MiniGPT-4/issues/117
 
-报错2
+## 报错2
 
 torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 136.00 MiB (GPU 0; 23.68 GiB total capacity; 2.49 GiB already allocated; 63.75 MiB free; 2.67 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
 
@@ -24,15 +24,55 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python demo.py --cfg-path eval_configs/mini
 
 失败：torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 136.00 MiB (GPU 0; 23.68 GiB total capacity; 2.49 GiB already allocated; 63.75 MiB free; 2.67 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
 
+尝试2 
 
+```bash
+export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:64
+```
 
+失败：torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 68.00 MiB (GPU 0; 23.68 GiB total capacity; 2.71 GiB already allocated; 15.75 MiB free; 2.71 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
 
+尝试3
 
+```bash
+export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:32
+```
 
+失败： CUDA out of memory. Tried to allocate 68.00 MiB (GPU 0; 23.68 GiB total capacity; 2.71 GiB already allocated; 15.75 MiB free; 2.71 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
 
+尝试4：change to a smaller model
 
+```python
+from huggingface_hub import hf_hub_download
+import os
 
+# Hugging Face 模型路径和目标路径
+model_repo = "Vision-CAIR/vicuna-7b"
+destination_path = "/home/louey/MiniGPT-4/vicuna7b"
 
+# 创建目标文件夹（如果不存在）
+os.makedirs(destination_path, exist_ok=True)
+
+# 文件列表
+files_to_download = [
+    "pytorch_model-00001-of-00003.bin",
+    "pytorch_model-00002-of-00003.bin",
+    "config.json",
+    "generation_config.json",
+    "pytorch_model.bin.index.json",
+    "special_tokens_map.json",
+    "tokenizer.model",
+    "tokenizer_config.json",
+]
+
+# 下载文件
+for file_name in files_to_download:
+    hf_hub_download(repo_id=model_repo, filename=file_name, local_dir=destination_path)
+```
+
+```bash
+python /home/louey/MiniGPT-4/hg.py
+```
 
 
 
