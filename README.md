@@ -71,8 +71,11 @@ for file_name in files_to_download:
 ```
 
 ```bash
+unset PYTORCH_CUDA_ALLOC_CONF;
+
 python /home/louey/MiniGPT-4/hg.py
 ```
+
 
 
 
