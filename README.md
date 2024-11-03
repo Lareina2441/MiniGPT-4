@@ -79,8 +79,109 @@ python /home/louey/MiniGPT-4/hg.py
 成功
 
 
+# merge
 
+```python
+import torch
+from transformers import AutoTokenizer, AutoModelForCauimport torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
+# 设置模型路径
+vicuna_model_path = "/home/louey/MiniGPT-4/vicuna7b"
+minigpt4_checkpoint_path = "/home/louey/MiniGPT-4/prerained_minigpt4_7b.pth"
+output_model_path = "/home/louey/MiniGPT-4/minigpt4/mergedMiniGPT4Vicuna7B"
+
+# 检查是否有可用的 GPU
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# 加载 Vicuna 7B 模型和 tokenizer
+tokenizer = AutoTokenizer.from_pretrained(vicuna_model_path)
+model = AutoModelForCausalLM.from_pretrained(vicuna_model_path).to(device)
+
+# 加载 MiniGPT-4 检查点
+checkpoint = torch.load(minigpt4_checkpoint_path, map_location=device)
+
+# 融合模型和检查点
+model.load_state_dict(checkpoint, strict=False)
+
+# 保存融合后的模型和 tokenizer
+model.save_pretrained(output_model_path)
+tokenizer.save_pretrained(output_model_path)
+
+print(f"Model and tokenizer have been saved to {output_model_path}")
+```
+失败： Traceback (most recent call last):
+。。。
+  File "/home/louey/anaconda3/envs/minigptv/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1143, in convert
+    return t.to(device, dtype if t.is_floating_point() or t.is_complex() else None, non_blocking)
+torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 172.00 MiB (GPU 0; 23.68 GiB total capacity; 2.59 GiB already allocated; 141.75 MiB free; 2.59 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+
+try
+
+```bash
+export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:32
+```
+```
+import os
+import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+# 设置 PYTORCH_CUDA_ALLOC_CONF 环境变量
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
+
+# 设置模型路径
+import os
+import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+# 设置 PYTORCH_CUDA_ALLOC_CONF 环境变量
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
+
+# 设置模型路径
+vicuna_model_path = "/home/louey/MiniGPT-4/vicuna7b"
+minigpt4_checkpoint_path = "/home/louey/MiniGPT-4/prerained_minigpt4_7b.pth"
+output_model_path = "/home/louey/MiniGPT-4/minigpt4/mergedMiniGPT4Vicuna7B"
+
+# 检查是否有可用的 GPU
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# 释放未使用的 GPU 内存
+torch.cuda.empty_cache()
+
+# 加载 Vicuna 7B 模型和 tokenizer
+tokenizer = AutoTokenizer.from_pretrained(vicuna_model_path)
+model = AutoModelForCausalLM.from_pretrained(vicuna_model_path).to(device)
+
+# 加载 MiniGPT-4 检查点
+checkpoint = torch.load(minigpt4_checkpoint_path, map_location=device)
+
+# 融合模型和检查点
+model.load_state_dict(checkpoint, strict=False)
+
+# 保存融合后的模型和 tokenizer
+model.save_pretrained(output_model_path)
+tokenizer.save_pretrained(output_model_path)
+
+print(f"Model and tokenizer have been saved to {output_model_path}")
+# evaluation
+
+try
+
+```bash
+CUDA_VISIBLE_DEVICES=2,4,6 python /home/louey/LLaVA/model_vqa.py \
+--model-path /home/louey/MiniGPT-4/minigpt4 \
+--image-folder /home/louey/LLaVA/data/images \
+--question-file /home/louey/LLaVA/data/validation/question.jsonl \
+--answers-file /home/louey/LLaVA/data/validation/answer5mini.jsonl \
+--conv-mode llava_v1 \
+--num-chunks 1 \
+--chunk-idx 0 \
+--temperature 0.3 \
+--top_p 0.9 \
+--num_beams 5
+```
+
+(model_vqa.py is from llava)
 
 
 
