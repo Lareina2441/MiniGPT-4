@@ -76,6 +76,10 @@ unset PYTORCH_CUDA_ALLOC_CONF;
 python /home/louey/MiniGPT-4/hg.py
 ```
 
+成功
+
+
+
 
 
 
